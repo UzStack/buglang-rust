@@ -1,13 +1,13 @@
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ValueType {
     Number,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Value {
-    value_type: ValueType,
-    value: f64,
+    pub value_type: ValueType,
+    pub value: f64,
 }
 
 impl Value {

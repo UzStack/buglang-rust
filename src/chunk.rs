@@ -1,10 +1,12 @@
 use crate::compiler::OpCode;
 use crate::value::Value;
 
+
+#[derive(Debug, Clone)]
 pub struct Chunk {
-    code: Vec<u8>,
-    constants: Vec<Value>,
-    lines: Vec<i32>,
+    pub code: Vec<u8>,
+    pub constants: Vec<Value>,
+    pub lines: Vec<i32>,
 }
 
 impl Chunk {
@@ -46,11 +48,11 @@ impl Chunk {
 
     pub fn contant_instrcution(&self, offset: usize) -> usize {
         let constant = self.code[offset + 1];
-        println!("(constant) {:?}", self.constants[constant as usize]);
+        println!("{:?}", self.constants[constant as usize].value);
         offset + 2
     }
 
-    fn disassemble_instruction(&self, offset: usize) -> usize {
+    pub fn disassemble_instruction(&self, offset: usize) -> usize {
         let instruction = self.code[offset];
         println!(" --- > {:?}", OpCode::from_u8(instruction).unwrap());
         match instruction {

@@ -37,12 +37,12 @@ impl Precedence {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum OpCode {
-    Return,
-    Constant,
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
+    Return,   // return
+    Constant, // constant
+    Add,      // +
+    Subtract, // -
+    Multiply, // *
+    Divide,   // /
 }
 
 impl OpCode {
@@ -87,7 +87,7 @@ pub struct Parser<'a> {
     source: &'a str,
     scanner: Scanner<'a>,
     rules: HashMap<TokenType, ParseRule<'a>>,
-    chunk: Chunk,
+    pub chunk: Chunk,
 }
 
 impl<'a> Parser<'a> {
@@ -131,9 +131,7 @@ impl<'a> Parser<'a> {
     pub fn binary(&mut self) {
         let operator_type = self.previous.as_ref().unwrap().token_type;
         let rule = self.get_rule(operator_type).unwrap();
-        println!("Binary expression parsed ---- {:?}", self.current);
         self.parse_precedence(rule.precedence.next());
-        println!("Binary expression parsed {:?}", self.current);
         match operator_type {
             TokenType::Minus => self.emit_byte(OpCode::Subtract as u8),
             TokenType::Plus => self.emit_byte(OpCode::Add as u8),
@@ -223,6 +221,10 @@ impl<'a> Parser<'a> {
     pub fn compile(&mut self) {
         self.advance();
         self.expression();
-        self.chunk.disassemble("test");
+        self.emit_byte(OpCode::Return as u8);
+    }
+
+    pub fn get_chunk(self) -> Chunk {
+        self.chunk
     }
 }
