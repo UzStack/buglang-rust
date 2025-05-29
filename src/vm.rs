@@ -4,7 +4,6 @@ use crate::value::{Value, ValueType};
 
 pub struct VM {
     stack: Vec<Value>,
-    stack_top: u8,
     chunk: Chunk,
     ip: u8,
 }
@@ -15,7 +14,6 @@ impl VM {
         parser.compile();
         VM {
             stack: Vec::new(),
-            stack_top: 0,
             ip: 0,
             chunk: parser.get_chunk(),
         }
@@ -23,7 +21,6 @@ impl VM {
 
     fn push(&mut self, value: Value) {
         self.stack.push(value);
-        self.stack_top += 1;
     }
 
     fn read_byte(&mut self) -> u8 {
@@ -77,16 +74,16 @@ impl VM {
         loop {
             self.chunk.disassemble_instruction(self.ip as usize);
             let instruction = self.read_byte();
-            match instruction {
-                x if x == OpCode::Constant as u8 => {
+            match OpCode::try_from(instruction) {
+                Ok(OpCode::Constant) => {
                     let constant = self.read_constant();
                     self.push(constant);
                 }
-                x if x == OpCode::Add as u8 => self.add(),
-                x if x == OpCode::Divide as u8 => self.derive(),
-                x if x == OpCode::Subtract as u8 => self.subtract(),
-                x if x == OpCode::Multiply as u8 => self.multiply(),
-                x if x == OpCode::Return as u8 => {
+                Ok(OpCode::Add) => self.add(),
+                Ok(OpCode::Divide) => self.derive(),
+                Ok(OpCode::Subtract) => self.subtract(),
+                Ok(OpCode::Multiply) => self.multiply(),
+                Ok(OpCode::Return) => {
                     println!("Return value: {}", self.pop().value);
                     break;
                 }

@@ -34,7 +34,7 @@ impl Precedence {
         }
     }
 }
-
+#[repr(u8)]
 #[derive(Debug, PartialEq, Eq)]
 pub enum OpCode {
     Return,   // return
@@ -56,6 +56,22 @@ impl OpCode {
             4 => Some(Multiply),
             5 => Some(Divide),
             _ => None,
+        }
+    }
+}
+
+impl TryFrom<u8> for OpCode {
+    type Error = ();
+    fn try_from(value: u8) -> Result<OpCode, Self::Error> {
+        use OpCode::*;
+        match value {
+            0 => Ok(Return),
+            1 => Ok(Constant),
+            2 => Ok(Add),
+            3 => Ok(Subtract),
+            4 => Ok(Multiply),
+            5 => Ok(Divide),
+            _ => Err(()),
         }
     }
 }
